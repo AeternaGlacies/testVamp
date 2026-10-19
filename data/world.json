@@ -1,0 +1,187 @@
+{
+  "posts": [
+    {
+      "id": "p1",
+      "author": "Journal du Fjord",
+      "initial": "J",
+      "color": "a4",
+      "when": "Aujourd’hui · 21:14",
+      "scope": "Public",
+      "text": "Le pavillon Saint-Laurent restera fermé pour une durée indéterminée. La direction évoque une intervention technique après une panne nocturne. Plusieurs témoins affirment pourtant avoir aperçu des véhicules non identifiés vers 3 h du matin.",
+      "likes": 18,
+      "comments": [
+        {
+          "author": "Élise Morin",
+          "text": "Il y avait aussi des gens en costume sombre. J'ai pris une photo, mais elle a disparu de mon téléphone."
+        }
+      ],
+      "clue": "pavillon"
+    },
+    {
+      "id": "p2",
+      "author": "Élise Morin",
+      "initial": "É",
+      "color": "a2",
+      "when": "Hier · 23:48",
+      "scope": "Amis et abonnés",
+      "text": "Question sérieuse : est-ce que quelqu’un sait pourquoi les caméras du stationnement de l’ancien hôpital étaient toutes orientées vers le mur cette nuit ? Ça n'a aucun sens.",
+      "likes": 7,
+      "comments": [
+        {
+          "author": "Marc Beaulieu",
+          "text": "Élise, efface ça. On en parle demain."
+        }
+      ]
+    },
+    {
+      "id": "p3",
+      "author": "Fondation Vesper",
+      "initial": "V",
+      "color": "",
+      "when": "Hier · 16:09",
+      "scope": "Annonce sponsorisée",
+      "text": "La Fondation Vesper est heureuse d'annoncer l'ouverture de son nouveau programme d'aide aux archives régionales. Parce que notre histoire appartient à tous.",
+      "attachment": {
+        "title": "Programme Vesper — Appel aux partenaires",
+        "meta": "Document institutionnel · PDF simulé"
+      },
+      "likes": 42,
+      "comments": [],
+      "clue": "vesper"
+    },
+    {
+      "id": "p4",
+      "author": "Marc Beaulieu",
+      "initial": "M",
+      "color": "a3",
+      "when": "Samedi · 01:12",
+      "scope": "Public",
+      "text": "Avis aux gens du centre-ville : évitez la rue Racine après minuit pour les prochains jours. Les travaux ne sont pas indiqués, mais le secteur est fermé par intermittence.",
+      "likes": 12,
+      "comments": []
+    }
+  ],
+  "messages": [
+    {
+      "id": "m1",
+      "from": "Élise Morin",
+      "initial": "É",
+      "preview": "J'ai trouvé quelque chose dans les archives…",
+      "time": "23:52",
+      "body": "Je crois que les dossiers du pavillon Saint-Laurent ont été modifiés. La dernière version est datée du 14 octobre, mais le sceau porte la mention VSP-07. Tu as déjà vu ce sigle ?",
+      "clue": "code"
+    },
+    {
+      "id": "m2",
+      "from": "Archives municipales",
+      "initial": "A",
+      "preview": "Votre demande de consultation",
+      "time": "Hier",
+      "body": "Votre demande de consultation des registres de 1998 a été reçue. Le fonds « Saint-Laurent » est temporairement restreint à la suite d'une révision administrative."
+    },
+    {
+      "id": "m3",
+      "from": "Marc Beaulieu",
+      "initial": "M",
+      "preview": "Ne te fie pas aux horaires publics.",
+      "time": "Sam.",
+      "body": "Si tu cherches à comprendre les déplacements de la Fondation Vesper, ne te fie pas aux horaires publics. Les vraies opérations ont lieu après la fermeture."
+    }
+  ],
+  "archives": [
+    {
+      "id": "a1",
+      "title": "Communiqué — Pavillon Saint-Laurent",
+      "meta": "Journal du Fjord · Fichier public",
+      "content": "COMMUNIQUÉ PUBLIC — Le pavillon Saint-Laurent a été fermé pour maintenance. Aucun incident notable n'a été déclaré.",
+      "clue": "pavillon"
+    },
+    {
+      "id": "a2",
+      "title": "Programme philanthropique Vesper",
+      "meta": "Fondation Vesper · Brochure",
+      "content": "Programme de conservation patrimoniale. Financement privé. Contact institutionnel : Département VSP-07.",
+      "clue": "vesper"
+    },
+    {
+      "id": "a3",
+      "title": "Registre de maintenance 1998",
+      "meta": "Archives municipales · Accès restreint",
+      "locked": true,
+      "content": "REGISTRE 1998 — Une entrée a été effacée du registre de nuit. Transfert signé VSP-07.",
+      "clue": "registre"
+    }
+  ],
+  "groups": [
+    {
+      "id": "g1",
+      "name": "Vie nocturne du Saguenay",
+      "initial": "V",
+      "visibility": "Public",
+      "members": "1 284",
+      "description": "Sorties, rencontres et conversations après le coucher du soleil.",
+      "posts": [
+        {
+          "id": "g1p1",
+          "author": "Camille Tremblay",
+          "initial": "C",
+          "color": "a2",
+          "when": "Cette semaine",
+          "scope": "Groupe public",
+          "text": "Quelqu’un sait pourquoi le stationnement de l’ancien pavillon est surveillé même quand le bâtiment est fermé ?",
+          "likes": 6,
+          "comments": [
+            {
+              "author": "Élise Morin",
+              "text": "J’ai remarqué la même chose."
+            }
+          ],
+          "clue": "pavillon"
+        }
+      ]
+    },
+    {
+      "id": "g2",
+      "name": "Archives oubliées de Chicoutimi",
+      "initial": "A",
+      "visibility": "Privé (simulation)",
+      "members": "312",
+      "description": "Photographies, registres et histoires que personne ne raconte plus.",
+      "posts": [
+        {
+          "id": "g2p1",
+          "author": "Louis Perron",
+          "initial": "L",
+          "color": "a3",
+          "when": "Il y a 2 jours",
+          "scope": "Groupe privé",
+          "text": "En comparant les registres de 1998, on tombe souvent sur une fondation privée du nom de Vesper. Curieux, non ?",
+          "likes": 14,
+          "comments": [],
+          "clue": "vesper"
+        }
+      ]
+    },
+    {
+      "id": "g3",
+      "name": "Observations insolites — Saguenay",
+      "initial": "O",
+      "visibility": "Public",
+      "members": "567",
+      "description": "Phénomènes étranges, témoignages et discussions locales.",
+      "posts": [
+        {
+          "id": "g3p1",
+          "author": "Nadia Roy",
+          "initial": "N",
+          "color": "a4",
+          "when": "Hier soir",
+          "scope": "Groupe public",
+          "text": "J’ai vu trois voitures noires quitter la rue Racine sans leurs phares. Ça ressemblait à un convoi officiel.",
+          "likes": 9,
+          "comments": []
+        }
+      ]
+    }
+  ]
+}
