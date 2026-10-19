@@ -1,4 +1,4 @@
-# Nocturne — Réseau Saguenay (v0.4)
+# Nocturne — Réseau Saguenay (v0.5)
 
 **Site prévu :** https://aeternaglacies.github.io/testVamp/
 
@@ -47,3 +47,21 @@ Puis ouvrez http://localhost:8000/ (ne pas ouvrir `index.html` par double-clic).
 - En ligne, les publications et l'index sont rafraîchis depuis GitHub Pages. Hors ligne, seules les ressources déjà consultées peuvent être accessibles.
 - Pas d'authentification, de comptes multiples, de commentaires ni de messages privés : c'est volontaire, tout le monde voit le même contenu.
 - Aucune fonction de piratage réel.
+
+## Noms des fichiers = identité des publications
+
+Utilisez **`{couleur}_{nom}_{qui}.{extension}`**. Les trois champs sont séparés par des underscores (`_`).
+
+- **couleur** : `rouge`, `bleu`, `vert`, `jaune`, `orange`, `violet`, `rose`, `noir`, `gris`, `brun`, `blanc` (couleur de l'avatar).
+- **nom** : titre de la publication. Utilisez des traits d'union si besoin (`Sirop-mysterieux`).
+- **qui** : nom de l'auteur affiché (par exemple `Marie-Tremblay`).
+- **extension** : `.txt`, `.png`, `.jpg`, `.jpeg`, `.gif` ou `.webp`.
+
+Exemples :
+
+- `rouge_Le-sirop_Marie-Tremblay.txt` → publication « Le sirop » de Marie Tremblay, avatar rouge « MT ».
+- `bleu_Photo-du-quai_Jules-Martin.jpg` → image publiée par Jules Martin, avatar bleu « JM ».
+- `vert_Temoignage_Alex.png` → image publiée par Alex, avatar vert « A ».
+- `01_rumeur_sirop.txt` → **profil générique gris** « Membre du réseau », aucune couleur ni auteur reconnu.
+
+Si le format n'est pas valide ou si la couleur n'est pas reconnue, le profil générique gris est utilisé. Les images du dossier restent les pièces jointes/publications : le fichier ne devient pas une photo de profil. Dans Messages et Archives, l'auteur est également affiché. Pour modifier la couleur d'une publication, renommez le fichier puis republiez le dépôt.

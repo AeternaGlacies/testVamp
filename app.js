@@ -24,13 +24,28 @@ async function liveGithubIndex(){
 function safePath(p){if(typeof p!=='string'||p.startsWith('/')||p.includes('..')||p.includes('\\')||!/^contenu\/[\wÀ-ÿ .()\-\/]+\.(txt|png|jpg|jpeg|gif|webp)$/i.test(p))return null;return ROOT+p.split('/').map(encodeURIComponent).join('/');}
 async function getText(file){const url=safePath(file);if(!url)throw Error('Chemin invalide');const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Fichier inaccessible');return r.text()}
 function friendly(file){return file.split('/').pop().replace(/\.[^.]+$/,'').replace(/[_-]/g,' ')}
-function avatar(){return '<span class="avatar">N</span>'}
+// Format: couleur_nom_qui.ext (ex. rouge_Sirop_Marie Tremblay.txt).
+// Le premier champ donne la couleur, le deuxieme le titre, le dernier l'auteur.
+const AUTHOR_COLORS={rouge:'#9b233d',bleu:'#2866a0',vert:'#287d61',jaune:'#9b6b13',orange:'#b55d2e',violet:'#7447a4',rose:'#a94175',noir:'#33343a',gris:'#74777e',brun:'#75513d',blanc:'#b7b7b7'};
+function fileIdentity(file){
+ const base=decodeURIComponent(file.split('/').pop()||'').replace(/\.[^.]+$/,'');
+ const parts=base.split('_');const candidate=parts[0]?.toLocaleLowerCase('fr');
+ if(parts.length<3||!Object.hasOwn(AUTHOR_COLORS,candidate))return {color:'gris',title:friendly(file),author:'Membre du réseau',custom:false};
+ const title=parts.slice(1,-1).join(' ').replace(/-/g,' ').trim();
+ const author=parts.at(-1).replace(/-/g,' ').trim();
+ if(!title||!author)return {color:'gris',title:friendly(file),author:'Membre du réseau',custom:false};
+ return {color:candidate,title,author,custom:true};
+}
+function avatar(who='Membre du réseau',color='gris'){
+ const initials=who.trim().split(/\s+/).slice(0,2).map(w=>w.charAt(0).toLocaleUpperCase('fr')).join('')||'●';
+ return `<span class="avatar person-avatar" style="--person-color:${AUTHOR_COLORS[color]||AUTHOR_COLORS.gris}" aria-label="${esc(who)}">${esc(initials)}</span>`;
+}
 async function card(item,source='current'){
- const file=item.path||'';const title=item.title||friendly(file);const ext=file.split('.').pop().toLowerCase();const isImage=/^(png|jpg|jpeg|gif|webp)$/.test(ext);let content='';
+ const file=item.path||'';const identity=fileIdentity(file);const title=identity.title;const ext=file.split('.').pop().toLowerCase();const isImage=/^(png|jpg|jpeg|gif|webp)$/.test(ext);let content='';
  if(isImage){const url=safePath(file);content=url?`<img class="post-media" loading="lazy" src="${esc(url)}" alt="${esc(title)}">`:'<div class="empty">Image non disponible</div>'}
  else{try{content=`<div class="post-body">${esc(await getText(file))}</div>`}catch{content='<div class="post-body">Ce document ne peut pas être chargé.</div>'}}
- if(source==='current')return `<article class="card"><div class="post-head">${avatar()}<div><div class="post-author">Réseau Saguenay</div><div class="meta">Publication de la semaine · ${esc(title)}</div></div></div>${content}<div class="post-footer"><span>Accessible aux membres du réseau</span><span>●</span></div></article>`;
- return `<article class="card info-card"><h2>${esc(title)}</h2><div class="file-meta">${source==='messages'?'Information partagée':'Archive du réseau'}</div>${isImage?content:`<div class="file-body">${content.replace(/^<div class="post-body">|<\/div>$/g,'')}</div>`}</article>`;
+ if(source==='current')return `<article class="card"><div class="post-head">${avatar(identity.author,identity.color)}<div><div class="post-author">${esc(identity.author)}</div><div class="meta">${esc(title)} · Publication de la semaine</div></div></div>${content}<div class="post-footer"><span>Accessible aux membres du réseau</span><span>●</span></div></article>`;
+ return `<article class="card info-card"><div class="post-head">${avatar(identity.author,identity.color)}<div><div class="post-author">${esc(identity.author)}</div><div class="meta">${esc(title)} · ${source==='messages'?'Information partagée':'Archive du réseau'}</div></div></div>${isImage?content:`<div class="file-body">${content.replace(/^<div class="post-body">|<\/div>$/g,'')}</div>`}</article>`;
 }
 const matches=(item)=>!search||`${item.title||''} ${item.path||''}`.toLocaleLowerCase('fr').includes(search);
 async function buildCards(items,source){return (await Promise.all(items.filter(matches).map(x=>card(x,source)))).join('')||'<div class="card empty">Aucun fichier à afficher pour le moment.</div>'}
