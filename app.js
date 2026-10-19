@@ -3,6 +3,24 @@ const esc = (s)=>String(s??'').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;',
 const slug = (s)=>String(s||'').replace(/[^a-z0-9_-]/gi,'');
 let index={current:[],messages:[],archives:[]}, view='feed', archive=null, search='';
 const ROOT='./';
+// Inventaire direct du depot public : evite un index.json perime en mode Pages /branch.
+const GITHUB_TREE='https://api.github.com/repos/AeternaGlacies/testVamp/git/trees/main?recursive=1';
+function fromGitTree(entries){
+ const allowed=/\.(txt|png|jpg|jpeg|gif|webp)$/i;
+ const normalize=p=>({path:p,title:p.split('/').pop().replace(/\.[^.]+$/,'').replace(/[_-]/g,' ')});
+ const paths=entries.filter(e=>e.type==='blob'&&e.path.startsWith('contenu/')&&allowed.test(e.path)).map(e=>e.path);
+ const byFolder=(folder)=>paths.filter(p=>p.slice(0,p.lastIndexOf('/')+1)===folder).sort((a,b)=>a.localeCompare(b,'fr',{numeric:true})).map(normalize);
+ const nums=[...new Set(paths.map(p=>p.match(/^contenu\/archives\/(\d+)\//)?.[1]).filter(Boolean))].sort((a,b)=>Number(b)-Number(a));
+ return {current:byFolder('contenu/semaine/'), messages:byFolder('contenu/messages/'),archives:nums.map(n=>({id:n,title:'Semaine '+n,files:byFolder('contenu/archives/'+n+'/')}))};
+}
+async function liveGithubIndex(){
+ if(location.hostname!=='aeternaglacies.github.io')return null;
+ const controller=new AbortController();const timeout=setTimeout(()=>controller.abort(),5000);
+ try{const r=await fetch(GITHUB_TREE,{signal:controller.signal,cache:'no-store',headers:{Accept:'application/vnd.github+json'}});
+ if(!r.ok)throw Error('GitHub '+r.status);const tree=await r.json();if(tree.truncated||!Array.isArray(tree.tree))throw Error('Inventaire incomplet');return fromGitTree(tree.tree);
+ }finally{clearTimeout(timeout)}
+}
+
 function safePath(p){if(typeof p!=='string'||p.startsWith('/')||p.includes('..')||p.includes('\\')||!/^contenu\/[\wÀ-ÿ .()\-\/]+\.(txt|png|jpg|jpeg|gif|webp)$/i.test(p))return null;return ROOT+p.split('/').map(encodeURIComponent).join('/');}
 async function getText(file){const url=safePath(file);if(!url)throw Error('Chemin invalide');const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Fichier inaccessible');return r.text()}
 function friendly(file){return file.split('/').pop().replace(/\.[^.]+$/,'').replace(/[_-]/g,' ')}
@@ -26,5 +44,12 @@ async function render(){const el=$('#view');const thisView=view;const thisArchiv
 function navigate(next){view=next;archive=null;search='';$('#search').value='';render();window.scrollTo(0,0)}
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.view)navigate(b.dataset.view);if(b.dataset.archive){archive=b.dataset.archive;render();window.scrollTo(0,0)}if(b.id==='back'){archive=null;render()}});
 $('#search').addEventListener('input',e=>{search=e.target.value.trim().toLocaleLowerCase('fr');render()});
-async function start(){try{const r=await fetch('./data/index.json',{cache:'no-store'});if(!r.ok)throw Error('index');const data=await r.json();index={current:Array.isArray(data.current)?data.current:[],messages:Array.isArray(data.messages)?data.messages:[],archives:Array.isArray(data.archives)?data.archives:[]};await render()}catch{$('#view').innerHTML='<div class="card info-card error"><h2>Index non disponible</h2><p>Lancez <code>python scripts/generer_index.py</code> puis ouvrez le site via un serveur web ou GitHub Pages.</p></div>'}}
+async function start(){
+ try{
+  let data=null;
+  try{data=await liveGithubIndex()}catch(error){console.warn('Inventaire GitHub indisponible; utilisation de index.json',error)}
+  if(!data){const r=await fetch('./data/index.json',{cache:'no-store'});if(!r.ok)throw Error('index');data=await r.json()}
+  index={current:Array.isArray(data.current)?data.current:[],messages:Array.isArray(data.messages)?data.messages:[],archives:Array.isArray(data.archives)?data.archives:[]};await render();
+ }catch(error){console.error(error);$('#view').innerHTML='<div class="card info-card error"><h2>Publications indisponibles</h2><p>Vérifie la publication GitHub Pages et le dossier <code>contenu/semaine/</code>. L’index du dépôt est inaccessible.</p></div>'}
+}
 start();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});

@@ -1,4 +1,4 @@
-# Nocturne — Réseau Saguenay (v0.3)
+# Nocturne — Réseau Saguenay (v0.4)
 
 **Site prévu :** https://aeternaglacies.github.io/testVamp/
 
@@ -25,6 +25,8 @@ Ordre : alphabétique selon les noms de fichiers pour la semaine et les messages
 2. Ajoutez les nouveaux `.txt` et images dans `contenu/semaine/`.
 3. Actualisez/ajoutez les fichiers `.txt` de `contenu/messages/`.
 4. Faites un **commit/push** : GitHub Actions republie et met à jour l'index automatiquement.
+
+**Dépannage :** si des fichiers manquent, vérifiez qu’ils apparaissent bien dans les dossiers du dépôt GitHub (pas uniquement sur votre ordinateur), puis ouvrez Actions → Publier Nocturne et confirmez que la publication réussit. Rafraîchissez la page; sur une PWA installée, fermez puis rouvrez l’application. Le chargement de la liste en direct nécessite l’accès à l’API publique de GitHub; si elle est indisponible, `data/index.json` sert de solution de repli.
 
 **Attention :** Github Pages est public. Les visiteurs pourraient consulter les fichiers par URL, même ceux qui ne sont pas liés dans le menu. N'y mettez aucune donnée réelle ni aucun secret censé être inaccessible aux joueurs.
 

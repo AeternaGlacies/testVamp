@@ -3,6 +3,26 @@
     {
       "path": "contenu/semaine/01-Bienvenue.txt",
       "title": "01 Bienvenue"
+    },
+    {
+      "path": "contenu/semaine/01_rumeur_sirop.txt",
+      "title": "01 rumeur sirop"
+    },
+    {
+      "path": "contenu/semaine/02_ca_explique_des_choses.txt",
+      "title": "02 ca explique des choses"
+    },
+    {
+      "path": "contenu/semaine/03_sceptique.txt",
+      "title": "03 sceptique"
+    },
+    {
+      "path": "contenu/semaine/04_message_efface.txt",
+      "title": "04 message efface"
+    },
+    {
+      "path": "contenu/semaine/05_avertissement.txt",
+      "title": "05 avertissement"
     }
   ],
   "messages": [
