@@ -3,6 +3,17 @@ const esc = (s)=>String(s??'').replace(/[&<>"']/g,(c)=>({'&':'&amp;','<':'&lt;',
 const slug = (s)=>String(s||'').replace(/[^a-z0-9_-]/gi,'');
 let index={current:[],messages:[],archives:[]}, view='feed', archive=null, search='';
 const ROOT='./';
+// Melange une seule fois par chargement : tous les fichiers ont la meme chance.
+// Le fil propose 6 publications au hasard, puis 6 autres sans repetition.
+const FEED_BATCH=6;
+let feedOrder=[],feedLimit=FEED_BATCH;
+function shuffledCopy(items){
+ const result=[...items];
+ for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]]}
+ return result;
+}
+function resetRandomFeed(){feedOrder=shuffledCopy(index.current);feedLimit=FEED_BATCH}
+
 // Inventaire direct du depot public : evite un index.json perime en mode Pages /branch.
 const GITHUB_TREE='https://api.github.com/repos/AeternaGlacies/testVamp/git/trees/main?recursive=1';
 function fromGitTree(entries){
@@ -50,21 +61,28 @@ async function card(item,source='current'){
 const matches=(item)=>!search||`${item.title||''} ${item.path||''}`.toLocaleLowerCase('fr').includes(search);
 async function buildCards(items,source){return (await Promise.all(items.filter(matches).map(x=>card(x,source)))).join('')||'<div class="card empty">Aucun fichier à afficher pour le moment.</div>'}
 async function render(){const el=$('#view');const thisView=view;const thisArchive=archive;const titles={feed:'Fil d’actualité',messages:'Messages du réseau',archives:'Archives',profile:'Mon profil'};$('#page-title').textContent=titles[view];document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===view));el.innerHTML='<div class="card empty">Chargement des informations…</div>';let html='';
- if(view==='feed')html=`<div class="card intro"><h2>Cette semaine dans le réseau</h2><p>Les publications visibles ici sont les images et les fichiers texte déposés dans le dossier de la semaine en cours.</p></div><div class="section-title"><span>FIL D’ACTUALITÉ</span><span>${index.current.length} FICHIERS</span></div>`+await buildCards(index.current,'current');
+ if(view==='feed'){
+  // Une recherche explore tous les fichiers, meme ceux non encore tires au sort.
+  const candidates=search?index.current.filter(matches):feedOrder;
+  const visible=search?candidates:candidates.slice(0,feedLimit);
+  const remaining=search?0:Math.max(0,candidates.length-feedLimit);
+  html=`<div class="card intro"><h2>Cette semaine dans le réseau</h2><p>Un tirage aléatoire de publications du réseau Saguenay. Chaque nouvelle visite mélange le fil.</p></div><div class="section-title"><span>FIL D’ACTUALITÉ</span><span>${index.current.length} FICHIERS</span></div>`+await buildCards(visible,'current');
+  if(remaining)html+=`<div class="load-more-wrap"><button id="more-posts" class="back" type="button">Voir d’autres publications (${remaining} restantes)</button></div>`;
+ }
  if(view==='messages')html=`<div class="card intro"><h2>Informations connues</h2><p>Ces renseignements ont été recueillis et sont désormais connus de tous les membres du réseau Saguenay.</p></div><div class="section-title"><span>INFORMATIONS PARTAGÉES</span><span>${index.messages.length} DOCUMENTS</span></div>`+await buildCards(index.messages,'messages');
  if(view==='archives'){if(thisArchive){const a=index.archives.find(x=>x.id===thisArchive);html=`<button class="back" id="back">← Retour aux archives</button><div class="card intro"><h2>${esc(a?.title||'Archive')}</h2><p>Publications conservées des semaines précédentes.</p></div>`+(a?await buildCards(a.files,'archive'):'<div class="card empty">Archive introuvable.</div>')}else{html=`<div class="card intro"><h2>Historique des semaines</h2><p>Chaque dossier numéroté contient les publications archivées manuellement par le maître de jeu.</p></div>`+(index.archives.filter(a=>!search||`${a.title} ${a.id}`.toLowerCase().includes(search)).map(a=>`<div class="card"><button class="archive-item" data-archive="${esc(a.id)}"><span class="archive-symbol">▤</span><span><strong>${esc(a.title)}</strong><small>${a.files.length} fichier(s)</small></span><span style="margin-left:auto">›</span></button></div>`).join('')||'<div class="card empty">Aucune ancienne semaine archivée.</div>')}}
  if(view==='profile')html='<div class="card"><div class="profile-banner"></div><div class="profile-details">'+avatar()+'<h2>Membre du réseau</h2><p>Profil générique · Réseau Saguenay</p></div></div><div class="card info-card"><h2>Accès partagé</h2><p>Tout le monde utilise le même profil fictif. Aucune connexion individuelle, aucun mot de passe, aucune progression personnelle.</p></div>';
  if(view===thisView&&archive===thisArchive)el.innerHTML=html;
 }
 function navigate(next){view=next;archive=null;search='';$('#search').value='';render();window.scrollTo(0,0)}
-document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.view)navigate(b.dataset.view);if(b.dataset.archive){archive=b.dataset.archive;render();window.scrollTo(0,0)}if(b.id==='back'){archive=null;render()}});
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.view)navigate(b.dataset.view);if(b.dataset.archive){archive=b.dataset.archive;render();window.scrollTo(0,0)}if(b.id==='back'){archive=null;render()}if(b.id==='more-posts'){feedLimit+=FEED_BATCH;render()}});
 $('#search').addEventListener('input',e=>{search=e.target.value.trim().toLocaleLowerCase('fr');render()});
 async function start(){
  try{
   let data=null;
   try{data=await liveGithubIndex()}catch(error){console.warn('Inventaire GitHub indisponible; utilisation de index.json',error)}
   if(!data){const r=await fetch('./data/index.json',{cache:'no-store'});if(!r.ok)throw Error('index');data=await r.json()}
-  index={current:Array.isArray(data.current)?data.current:[],messages:Array.isArray(data.messages)?data.messages:[],archives:Array.isArray(data.archives)?data.archives:[]};await render();
+  index={current:Array.isArray(data.current)?data.current:[],messages:Array.isArray(data.messages)?data.messages:[],archives:Array.isArray(data.archives)?data.archives:[]};resetRandomFeed();await render();
  }catch(error){console.error(error);$('#view').innerHTML='<div class="card info-card error"><h2>Publications indisponibles</h2><p>Vérifie la publication GitHub Pages et le dossier <code>contenu/semaine/</code>. L’index du dépôt est inaccessible.</p></div>'}
 }
 start();if('serviceWorker'in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});

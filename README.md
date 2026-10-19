@@ -1,4 +1,4 @@
-# Nocturne — Réseau Saguenay (v0.5)
+# Nocturne — Réseau Saguenay (v0.6)
 
 **Site prévu :** https://aeternaglacies.github.io/testVamp/
 
@@ -10,7 +10,7 @@ Réseau social fictif, pour une campagne Vampire : La Mascarade. Les visiteurs v
 - **Messages du réseau :** `contenu/messages/` — chaque `.txt` devient une information connue de tous. Les images sont également prises en charge.
 - **Archives :** `contenu/archives/1/`, `contenu/archives/2/`, `contenu/archives/3/`, etc. — le maître de jeu déplace ou copie manuellement les fichiers des semaines antérieures dans les dossiers numérotés.
 
-Ordre : alphabétique selon les noms de fichiers pour la semaine et les messages; dossiers d'archives numérotés du plus grand au plus petit. Préfixez les noms `01-`, `02-` pour contrôler l'ordre.
+**Tirage aléatoire du fil :** au chargement de Nocturne, les publications de `contenu/semaine/` sont mélangées. Les 6 premières s'affichent; le bouton « Voir d’autres publications » en affiche 6 autres sans doublons, jusqu'à épuisement. Une actualisation du navigateur effectue un nouveau tirage. La recherche trouve **tous** les fichiers de la semaine, même ceux non encore affichés. Les Messages et les Archives restent dans leur ordre habituel.
 
 ## Publication GitHub Pages
 
