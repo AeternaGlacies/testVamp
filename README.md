@@ -1,48 +1,47 @@
-# Nocturne — réseau social fictif (prototype v0.1)
+# Nocturne — Réseau Saguenay (v0.3)
 
-Mini-application web statique et installable PWA pour une campagne de Vampire : La Mascarade. **Tout est fictif : aucun vrai réseau n'est sollicité, aucune authentification ou intrusion réelle.**
+**Site prévu :** https://aeternaglacies.github.io/testVamp/
 
-## Lancer en local
+Réseau social fictif, pour une campagne Vampire : La Mascarade. Les visiteurs voient le même contenu public sans compte individuel.
 
-Depuis le dossier du projet : `python -m http.server 8000` puis ouvrir `http://localhost:8000/`. Ne pas double-cliquer sur `index.html` : les fichiers JSON ont besoin d'un serveur HTTP.
+## Où déposer les fichiers ?
 
-## Publier sur GitHub Pages
+- **Fil de cette semaine :** `contenu/semaine/` — tout fichier `.txt`, `.png`, `.jpg`, `.jpeg`, `.gif` ou `.webp` devient une publication. Une image et un texte sont deux publications distinctes.
+- **Messages du réseau :** `contenu/messages/` — chaque `.txt` devient une information connue de tous. Les images sont également prises en charge.
+- **Archives :** `contenu/archives/1/`, `contenu/archives/2/`, `contenu/archives/3/`, etc. — le maître de jeu déplace ou copie manuellement les fichiers des semaines antérieures dans les dossiers numérotés.
 
-1. Créer un dépôt GitHub (p. ex. `nocturne`).
-2. Déposer **le contenu** de ce dossier à la racine du dépôt : `index.html`, `app.js`, etc.
-3. Dans *Settings → Pages*, choisir *Deploy from a branch*, branche `main`, dossier `/ (root)`.
-4. Ouvrir `https://VOTRE-NOM.github.io/nocturne/` puis installer via le menu du navigateur (Android) ou *Partager → Sur l'écran d'accueil* (iPhone, Safari).
+Ordre : alphabétique selon les noms de fichiers pour la semaine et les messages; dossiers d'archives numérotés du plus grand au plus petit. Préfixez les noms `01-`, `02-` pour contrôler l'ordre.
 
-Les chemins sont relatifs pour prendre en charge un dépôt de projet GitHub Pages.
+## Publication GitHub Pages
 
-## Modifier le scénario
+1. Décompressez ce projet à la racine du dépôt **AeternaGlacies/testVamp**, y compris le dossier caché `.github/`.
+2. Activez GitHub Pages : **Settings → Pages → Build and deployment → Source : GitHub Actions**.
+3. Envoyez les fichiers sur la branche `main`. L'action `Publier Nocturne` construit automatiquement `data/index.json` et publie l'application.
+4. Accédez à https://aeternaglacies.github.io/testVamp/.
 
-Éditer `data/world.json` :
-- `posts` : publications avec un `id` unique, `author`, `initial`, `when`, `text`, `likes`, `comments`, éventuellement `attachment` et `clue`.
-- `messages` : conversations avec `id`, `from`, `preview`, `body`, éventuellement `clue`.
-- `archives` : documents avec `id`, `title`, `meta`, `content`, éventuellement `locked` et `clue`.
+### Travail hebdomadaire
 
-Le code d'accès de démonstration est **VSP-07**. Il apparaît dans une conversation de démonstration. Les indices de démonstration sont définis dans `app.js` (`clueNames`).
+1. Copiez/déplacez manuellement les publications de `contenu/semaine/` vers `contenu/archives/NUMÉRO/`.
+2. Ajoutez les nouveaux `.txt` et images dans `contenu/semaine/`.
+3. Actualisez/ajoutez les fichiers `.txt` de `contenu/messages/`.
+4. Faites un **commit/push** : GitHub Actions republie et met à jour l'index automatiquement.
 
-## Limites importantes
+**Attention :** Github Pages est public. Les visiteurs pourraient consulter les fichiers par URL, même ceux qui ne sont pas liés dans le menu. N'y mettez aucune donnée réelle ni aucun secret censé être inaccessible aux joueurs.
 
-- Les nouveaux messages, commentaires et publications des joueurs ne sont **pas partagés** entre appareils. Ils restent dans `localStorage`.
-- GitHub Pages est statique : il ne permet pas d'authentifier des joueurs, de cacher des secrets réellement sensibles ou de synchroniser des données entre joueurs. Les documents « verrouillés » sont purement narratifs et le contenu est visible dans le dépôt public.
-- Pour de vrais comptes, de la synchronisation, une messagerie commune ou un panneau MJ privé, ajouter ultérieurement un serveur / service de base de données avec des règles d'accès (ex. Supabase ou Firebase).
-- Lors de mises à jour, la progression enregistrée dans le navigateur est conservée, sauf si l'utilisateur supprime ses données locales. Pour forcer un nouveau cache d'installation, modifier la version `CACHE` dans `sw.js`.
+## Tester localement
 
-## Installation et fichiers
+Depuis la racine du dossier :
 
-`index.html` (interface), `styles.css` (visuel), `app.js` (interactions), `data/world.json` (contenu), `manifest.webmanifest` + `sw.js` + `assets/icon-*.png` (PWA).
+```bash
+python scripts/generer_index.py
+python -m http.server 8000
+```
 
-Les noms, les entreprises et les évènements des données initiales sont entièrement fictifs. Le style est une proposition temporaire à faire évoluer avec le MJ.
+Puis ouvrez http://localhost:8000/ (ne pas ouvrir `index.html` par double-clic).
 
-## Nouveautés v0.2 — interface Facebook vampirique
+## PWA et limites
 
-- Interface responsive rouge sang et blanc cassé avec vrai style « réseau social » ; barre de navigation mobile.
-- Onglet **Groupes**, avec abonnement/désabonnement fictif et publications réservées aux groupes rejoints.
-- Indices dans les groupes et découverte progressive des pistes existantes.
-- Déverrouillage des archives conservé localement après saisie du code ; un indice trouvé ne déverrouille plus automatiquement un document.
-- Scénarios enrichis dans `data/world.json` avec la collection `groups`.
-
-**Pour le maître de jeu :** il suffit de modifier et republier `data/world.json` entre les séances pour changer publications, groupes, messages et archives sur les appareils connectés. Les contenus sont publics dans un dépôt GitHub Pages, et les publications faites par un joueur n’apparaissent pas chez les autres. Prévoir un serveur et des comptes pour une véritable campagne multijoueur synchronisée. Ne placez aucun secret réel dans le JSON.
+- La PWA est installable via son manifeste et un service worker; le chemin relatif `./` fonctionne sous `/testVamp/`.
+- En ligne, les publications et l'index sont rafraîchis depuis GitHub Pages. Hors ligne, seules les ressources déjà consultées peuvent être accessibles.
+- Pas d'authentification, de comptes multiples, de commentaires ni de messages privés : c'est volontaire, tout le monde voit le même contenu.
+- Aucune fonction de piratage réel.

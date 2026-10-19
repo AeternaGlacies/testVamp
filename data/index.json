@@ -1,0 +1,26 @@
+{
+  "current": [
+    {
+      "path": "contenu/semaine/01-Bienvenue.txt",
+      "title": "01 Bienvenue"
+    }
+  ],
+  "messages": [
+    {
+      "path": "contenu/messages/01-Informations-communes.txt",
+      "title": "01 Informations communes"
+    }
+  ],
+  "archives": [
+    {
+      "id": "1",
+      "title": "Semaine 1",
+      "files": [
+        {
+          "path": "contenu/archives/1/01-Semaine-precedente.txt",
+          "title": "01 Semaine precedente"
+        }
+      ]
+    }
+  ]
+}
